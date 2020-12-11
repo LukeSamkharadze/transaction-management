@@ -16,10 +16,12 @@ class Transaction {
         await scenario.call(this.store);
         this.logs.push(new SuccessfulLog(scenario.index, scenario.meta, storeBefore, deepCopy()(this.store)));
       }
-      catch (error) { this.logs.push(new FailedLog(scenario.index, scenario.meta, error)); break; }
-
-    for (var [id, scenario] of scenarios.slice(0, id).reverse().entries())
-      return await "restore" in scenario && scenario.restore(this.store);
+      catch (error) {
+        this.logs.push(new FailedLog(scenario.index, scenario.meta, error));
+        for (var scenario of scenarios.slice(0, id).reverse())
+          "restore" in scenario && await scenario.restore(this.store);
+        break;
+      }
   }
 }
 
