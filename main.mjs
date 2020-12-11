@@ -9,7 +9,7 @@ const scenarios = [
       description: 'This action is responsible for reading the most popular customers'
     },
     call: async (store) => { store.n = 1; },
-    restore: async (store) => { }
+    restore: async (store) => { delete store.n; }
   },
   {
     index: 3,
@@ -40,6 +40,7 @@ let transaction = new Transaction();
     let store = transaction.store; // {} | null
     let logs = transaction.logs; // []
 
+    console.log(store);
     console.log(logs);
   } catch (error) {
     console.log(error);
