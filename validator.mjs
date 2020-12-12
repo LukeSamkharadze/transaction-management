@@ -13,6 +13,7 @@ class Validator {
     new Property("meta", "object", true, [
       new Property("title", "string", true),
       new Property("description", "string", true)]),
+    new Property("isCritical", "boolean", false),
     new Property("call", "function", true),
     new Property("restore", "function", false),
   ]
@@ -20,7 +21,6 @@ class Validator {
   ValidateScenarios(scenarios) {
     if (!scenarios.every(o => this.ValidateObject(o, Validator._scenarioProps))) throw new Error("Scenario is not valid");
     if (!this.ValidateSequence(scenarios.map(o => o.index), Validator._scenarioProps)) throw new Error("Indexing is not valid");
-    return true;
   }
 
   ValidateObject(obj, props) {

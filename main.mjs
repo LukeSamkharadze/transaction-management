@@ -17,7 +17,8 @@ const scenarios = [
       title: 'Do something with popular customers',
       description: 'Bla bla bla bla'
     },
-    call: async (store) => { store.n++; throw new Error(":D:D:D:D:D:D") }
+    isCritical: false,
+    call: async (store) => { store.n++; throw new Error(":D:D:D:D:D:D") },
   },
   {
     index: 2,

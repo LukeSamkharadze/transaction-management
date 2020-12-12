@@ -20,4 +20,13 @@ class FailedLog extends Log {
   }
 }
 
-export { SuccessfulLog, FailedLog };
+class SilentFailedLog extends Log {
+  constructor(index, meta, storeBefore, storeAfter, error) {
+    super(index, meta);
+    this.storeBefore = storeBefore;
+    this.storeAfter = storeAfter;
+    this.error = { name: error.name, message: error.message, stack: error.stack };
+  }
+}
+
+export { SuccessfulLog, FailedLog, SilentFailedLog };
