@@ -24,7 +24,7 @@ class Validator {
   }
 
   ValidateObject(obj, props) {
-    return props.every(o => !o.isRequired || (o.name in obj && o.valueType === typeof obj[o.name] && props.length !== 0 && this.ValidateObject(obj[o.name], o.props)));
+    return props.every(o => !(o.name in obj || o.isRequired) || (o.name in obj && o.valueType === typeof obj[o.name] && props.length !== 0 && this.ValidateObject(obj[o.name], o.props)));
   }
 
   ValidateSequence(sequence) {
