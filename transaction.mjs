@@ -9,23 +9,26 @@ class Transaction {
 
   async DispatchScenarios(scenarios) {
     scenarios.sort((o, oo) => o.index - oo.index);
-    for (let [id, scenario] of scenarios.entries())
-      try { await this.DispatchScenario(scenario.call, SuccessfulLog, scenario.index, scenario.meta) }
-      catch (error) {
-        if ("isCritical" in scenario && !scenario.isCritical)
-          this.logs.push(new SilentFailedLog(scenario.index, scenario.meta, storeBefore, deepCopy()(this.store), error));
-        else {
-          this.logs.push(new FailedLog(scenario.index, scenario.meta, error));
-          scenarios.slice(0, id).reverse().forEach(async o => "restore" in o && await this.DispatchScenario(o.restore, RollbackLog, o.index, o.meta));
-          break;
-        }
-      }
+    try {
+      for (var [id, scenario] of scenarios.entries())
+        await this.DispatchScenario(scenario, scenario.call, SuccessfulLog, scenario.index, scenario.meta)
+    }
+    catch (error) {
+      this.logs.push(new FailedLog(scenario.index, scenario.meta, error));
+      scenarios.slice(0, id).reverse().forEach(async o => "restore" in o && await this.DispatchScenario(o, o.restore, RollbackLog, o.index, o.meta));
+    }
   }
 
-  async DispatchScenario(method, dispatchType, ...args) {
+  async DispatchScenario(scenario, method, dispatchType, ...args) {
     let storeBefore = deepCopy()(this.store);
-    await method(this.store);
-    this.logs.push(new dispatchType(...args.concat([storeBefore, deepCopy()(this.store)])));
+    try {
+      await method(this.store);
+      this.logs.push(new dispatchType(...args.concat([storeBefore, deepCopy()(this.store)])));
+    }
+    catch (error) {
+      if ("isCritical" in scenario && scenario.isCritical) throw error;
+      this.logs.push(new SilentFailedLog(scenario.index, scenario.meta, storeBefore, deepCopy()(this.store), error));
+    }
   }
 }
 

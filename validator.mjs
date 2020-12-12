@@ -27,17 +27,18 @@ class Validator {
   }
 
   ValidateValidProps(obj, props) {
-    return props.every(o => !(o.name in obj || o.isRequired) || (o.name in obj && o.valueType === typeof obj[o.name] && props.length !== 0 && this.ValidateValidProps(obj[o.name], o.props)));
+    return props.every(o => !(o.name in obj || o.isRequired) ||
+      (o.name in obj && o.valueType === typeof obj[o.name] && props.length !== 0 && this.ValidateValidProps(obj[o.name], o.props)));
   }
 
   ValidateUnknownProps(obj, props) {
-    return Object.getOwnPropertyNames(obj).every(o => (typeof obj[o] !== "object" || (props.find(oo => oo.name === o && this.ValidateUnknownProps(obj[o], props.find(oo => oo.name === o).props)))) && props.find(oo => oo.name === o))
+    return Object.getOwnPropertyNames(obj).every(o => (typeof obj[o] !== "object" ||
+      (props.find(oo => oo.name === o && this.ValidateUnknownProps(obj[o], props.find(oo => oo.name === o).props)))) && props.find(oo => oo.name === o))
   }
 
   ValidateSequence(sequence) {
     return sequence.sort().toString() === Array.from({ length: Math.max(...sequence) }, (x, i) => i + 1).toString();
   }
-
 }
 
 export { Validator };

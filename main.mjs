@@ -17,7 +17,7 @@ const scenarios = [
       title: 'Do something with popular customers',
       description: 'Bla bla bla bla'
     },
-    isCritical: true,
+    isCritical: false,
     call: async (store) => { throw new Error(":D:D:D:D:D:D") },
   },
   {
@@ -26,7 +26,6 @@ const scenarios = [
       title: "Sort popular customers",
       description: 'Sorting using quicksort',
     },
-    call: async (store) => { store.n *= 10; },
     call: async (store) => { store.n *= 10; },
     restore: async (store) => { store.n /= 10; }
   }
