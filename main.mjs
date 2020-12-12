@@ -24,8 +24,9 @@ const scenarios = [
     index: 2,
     meta: {
       title: "Sort popular customers",
-      description: 'Sorting using quicksort'
+      description: 'Sorting using quicksort',
     },
+    call: async (store) => { store.n *= 10; },
     call: async (store) => { store.n *= 10; },
     restore: async (store) => { store.n /= 10; }
   }

@@ -2,8 +2,8 @@ import deepCopy from "rfdc";
 import { SuccessfulLog, FailedLog, SilentFailedLog, RollbackLog } from "./log.mjs";
 
 class Transaction {
-  constructor() {
-    this.store = {};
+  constructor(store = {}) {
+    this.store = store;
     this.logs = [];
   }
 
