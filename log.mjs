@@ -29,4 +29,12 @@ class SilentFailedLog extends Log {
   }
 }
 
-export { SuccessfulLog, FailedLog, SilentFailedLog };
+class RollbackLog extends Log {
+  constructor(index, meta, storeBefore, storeAfter) {
+    super(index, meta);
+    this.storeBefore = storeBefore;
+    this.storeAfter = storeAfter;
+  }
+}
+
+export { SuccessfulLog, FailedLog, SilentFailedLog, RollbackLog};

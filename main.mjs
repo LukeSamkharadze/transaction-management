@@ -17,8 +17,8 @@ const scenarios = [
       title: 'Do something with popular customers',
       description: 'Bla bla bla bla'
     },
-    isCritical: false,
-    call: async (store) => { store.n++; throw new Error(":D:D:D:D:D:D") },
+    isCritical: true,
+    call: async (store) => { throw new Error(":D:D:D:D:D:D") },
   },
   {
     index: 2,
@@ -27,7 +27,7 @@ const scenarios = [
       description: 'Sorting using quicksort'
     },
     call: async (store) => { store.n *= 10; },
-    // restore: async (store) => { throw new Error("Restore error") }
+    restore: async (store) => { store.n /= 10; }
   }
 ];
 

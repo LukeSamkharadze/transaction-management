@@ -1,5 +1,5 @@
 import deepCopy from "rfdc";
-import { SuccessfulLog, FailedLog, SilentFailedLog } from "./log.mjs";
+import { SuccessfulLog, FailedLog, SilentFailedLog, RollbackLog } from "./log.mjs";
 
 class Transaction {
   constructor() {
@@ -22,7 +22,11 @@ class Transaction {
         else {
           this.logs.push(new FailedLog(scenario.index, scenario.meta, error));
           for (let scenario of scenarios.slice(0, id+1).reverse())
+          {
+            var storeBefore = deepCopy()(this.store);
             "restore" in scenario && await scenario.restore(this.store);
+            this.logs.push(new RollbackLog(scenario.index, scenario.meta, storeBefore, deepCopy()(this.store)));
+          }
           break;
         }
       }
