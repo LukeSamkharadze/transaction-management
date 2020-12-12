@@ -1,22 +1,21 @@
 class Property {
-  constructor(name, valueType, isRequired, props = []) {
+  constructor(name, validatorFn, isRequired, props = []) {
     this.name = name;
-    this.valueType = valueType;
+    this.validatorFn = validatorFn;
     this.isRequired = isRequired;
     this.props = props;
   }
 }
 
 class Validator {
-  static _scenarioMaxPropsCount = 7;
   static _scenarioProps = [
-    new Property("index", "number", true),
-    new Property("meta", "object", true, [
-      new Property("title", "string", true),
-      new Property("description", "string", true)]),
-    new Property("isCritical", "boolean", false),
-    new Property("call", "function", true),
-    new Property("restore", "function", false),
+    new Property("index", o => typeof o === "number", true),
+    new Property("meta", o => typeof o === "object", true, [
+      new Property("title", o => typeof o === "string", true),
+      new Property("description", o => typeof o === "string", true)]),
+    new Property("isCritical", o => typeof o === "boolean", false),
+    new Property("call", o => o[Symbol.toStringTag] === "AsyncFunction", true),
+    new Property("restore", o => o[Symbol.toStringTag] === "AsyncFunction", false),
   ]
 
   ValidateScenarios(scenarios) {
@@ -28,7 +27,7 @@ class Validator {
 
   ValidateValidProps(obj, props) {
     return props.every(o => !(o.name in obj || o.isRequired) ||
-      (o.name in obj && o.valueType === typeof obj[o.name] && props.length !== 0 && this.ValidateValidProps(obj[o.name], o.props)));
+      (o.name in obj && o.validatorFn(obj[o.name])) && props.length !== 0 && this.ValidateValidProps(obj[o.name], o.props));
   }
 
   ValidateUnknownProps(obj, props) {
