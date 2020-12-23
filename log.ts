@@ -1,9 +1,6 @@
-export { SuccessfulLog, FailedLog, SilentFailedLog, RollbackLog };
+import { Meta } from "./scenario"
 
-interface Meta {
-  title: string;
-  description: string;
-}
+export { SuccessfulLog, FailedLog, SilentFailedLog, RollbackLog };
 
 interface Log {
   index: number;
