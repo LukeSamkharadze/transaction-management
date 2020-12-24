@@ -9,15 +9,15 @@ export namespace Decorators {
     }
   }
 
-  export let counter: Map<any, number> = new Map<any, number>();
+  export let counter: Map<string, number> = new Map<any, number>();
   export function ConstructorCounter(key: string) {
     return function classDecorator<T extends { new(...args: any[]): {} }>(constructor: T) {
       return class extends constructor {
         constructor(...args: any[]) {
           super(...args);
-          if (counter.get(constructor) === undefined)
-            counter.set(constructor, -1); ``
-          counter.set(constructor, counter.get(constructor)! + 1)
+          if (counter.get(key) === undefined)
+            counter.set(key, 0);
+          counter.set(key, counter.get(key)! + 1)
         }
       }
     }

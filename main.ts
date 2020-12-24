@@ -1,12 +1,14 @@
-import { Validator } from "./validator";
-import ScenValidator = Validator.ScenarioValidator;
-import ScensValidator = Validator.ScenariosValidator;
+import { Validator } from "./validator"
+import ScenValidator = Validator.ScenarioValidator
+import ScensValidator = Validator.ScenariosValidator
 
-import { Transaction } from "./transaction";
-import trans = Transaction.Transaction;
+import { Transaction } from "./transaction"
+import trans = Transaction.Transaction
 
-import { Scenario } from "./scenario";
-import Scen = Scenario.Scenario;
+import { Scenario } from "./scenario"
+import Scen = Scenario.Scenario
+
+import { Decorators } from "./decorators"
 
 const scenarios: Scen[] = [
   new Scen(
@@ -44,6 +46,7 @@ let transaction = new trans({});
 
     console.log(store);
     console.log(logs);
+    console.log(`Scenario Constructor was called ${Decorators.counter.get("scenarioConstructor")} times`);
   } catch (error) {
     console.log(error);
   }
