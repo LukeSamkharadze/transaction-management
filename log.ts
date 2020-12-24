@@ -1,13 +1,11 @@
 import { Meta } from "./scenario"
 
-export { SuccessfulLog, FailedLog, SilentFailedLog, RollbackLog };
-
-interface Log {
+export interface Log {
   index: number;
   meta: Meta;
 }
 
-class ErrorLog implements Error {
+export class ErrorLog implements Error {
   name: string;
   message: string;
   stack: string;
@@ -19,21 +17,21 @@ class ErrorLog implements Error {
   }
 }
 
-class SuccessfulLog implements Log {
+export class SuccessfulLog implements Log {
   constructor(public index: number, public meta: Meta, public storeBefore: any, public storeAfter: any) { }
 }
 
-class RollbackLog implements Log {
+export class RollbackLog implements Log {
   constructor(public index: number, public meta: Meta, public storeBefore: any, public storeAfter: any) { }
 }
 
-class FailedLog extends ErrorLog implements Log {
+export class FailedLog extends ErrorLog implements Log {
   constructor(public index: number, public meta: Meta, public error: Error) {
     super(error);
   }
 }
 
-class SilentFailedLog extends ErrorLog implements Log {
+export class SilentFailedLog extends ErrorLog implements Log {
   constructor(public index: number, public meta: Meta, public storeBefore: any, public storeAfter: any, public error: Error) {
     super(error);
   }
