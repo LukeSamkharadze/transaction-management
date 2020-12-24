@@ -1,38 +1,75 @@
 import { Scenario } from "./scenario"
 
-class Property {
-  constructor(public name: string, public validatorFn: (o: any) => boolean, public isRequired: boolean, public props: Property[] = []) { }
+type ValidatorFn = (o: any) => boolean;
+
+export class ValidatableProperty {
+  constructor(public name: string, public validatorFn: ValidatorFn, public isRequired: boolean, public props: ValidatableProperty[] = []) { }
 }
 
-export class Validator {
-  static _scenarioProps = [
-    new Property("index", o => typeof o === "number", true),
-    new Property("meta", o => typeof o === "object", true, [
-      new Property("title", o => typeof o === "string", true),
-      new Property("description", o => typeof o === "string", true)]),
-    new Property("isCritical", o => typeof o === "boolean", false),
-    new Property("call", o => o[Symbol.toStringTag] === "AsyncFunction", true),
-    new Property("restore", o => o[Symbol.toStringTag] === "AsyncFunction", false),
+export interface Validator<T> {
+  Validate(obj: T): boolean;
+}
+
+export class ScenarioValidator implements Validator<Scenario>
+{
+  private static validatableProperties = [
+    new ValidatableProperty("index", o => typeof o === "number", true),
+    new ValidatableProperty("meta", o => typeof o === "object", true, [
+      new ValidatableProperty("title", o => typeof o === "string", true),
+      new ValidatableProperty("description", o => typeof o === "string", true)]),
+    new ValidatableProperty("isCritical", o => typeof o === "boolean", false),
+    new ValidatableProperty("call", o => o[Symbol.toStringTag] === "AsyncFunction", true),
+    new ValidatableProperty("restore", o => o[Symbol.toStringTag] === "AsyncFunction", false),
   ]
 
-  ValidateScenarios(scenarios: Scenario[]) {
-    if (!scenarios.every(o => this.ValidateValidProps(o, Validator._scenarioProps) && this.ValidateUnknownProps(o, Validator._scenarioProps)))
+  Validate(obj: Scenario): boolean {
+    if (this.ValidateValidProps(obj, ScenarioValidator.validatableProperties) && this.ValidateUnknownProps(obj, ScenarioValidator.validatableProperties))
+      return true;
+    throw new Error(`Scenario with ID: ${obj.index} is not valid`);
+  }
+
+  private IsValidPropertyName(propertyKey: string, obj: Scenario): propertyKey is keyof typeof obj {
+    return propertyKey in obj;
+  }
+
+  private GetPropertyValue(propertyKey: string, obj: Scenario): any {
+    if (this.IsValidPropertyName(propertyKey, obj))
+      return obj[propertyKey];
+    throw new Error("Property is not defined");
+  }
+
+  private ValidateProperty(propertyKey: string, obj: Scenario, validatorFn: ValidatorFn): boolean {
+    if (this.IsValidPropertyName(propertyKey, obj))
+      return validatorFn(obj[propertyKey])
+    return false;
+  }
+
+
+  private ValidateValidProps(obj: Scenario, props: ValidatableProperty[]): boolean {
+    return props.every(o => !(o.name in obj || o.isRequired) ||
+      this.ValidateProperty(o.name, obj, o.validatorFn) && props.length !== 0 && this.ValidateValidProps(this.GetPropertyValue(o.name, obj), o.props));
+  }
+
+  private ValidateUnknownProps(obj: Scenario, props: ValidatableProperty[]): boolean {
+    return Object.getOwnPropertyNames(obj).every(o => props.find(oo => oo.name === o) &&
+      (props.find(oo => oo.name === o && this.ValidateUnknownProps(this.GetPropertyValue(o, obj), props.find(oo => oo.name === o)!.props)) ||
+        (typeof this.GetPropertyValue(o, obj) !== "object")))
+  }
+}
+
+export class ScenariosValidator implements Validator<Scenario[]>
+{
+  constructor(private scenarioValidator: ScenarioValidator) { }
+
+  Validate(scenarios: Scenario[]): boolean {
+    if (!scenarios.every(o => this.scenarioValidator.Validate(o)))
       throw new Error("Scenario is not valid")
     if (!this.ValidateSequence(scenarios.map(o => o.index)))
       throw new Error("Indexing is not valid")
+    return true;
   }
 
-  ValidateValidProps(obj: any, props: Property[]): boolean {
-    return props.every(o => !(o.name in obj || o.isRequired) ||
-      (o.name in obj && o.validatorFn(obj[o.name])) && props.length !== 0 && this.ValidateValidProps(obj[o.name], o.props))
-  }
-
-  ValidateUnknownProps(obj: any, props: Property[]): boolean {
-    return Object.getOwnPropertyNames(obj).every(o => props.find(oo => oo.name === o) &&
-      (props.find(oo => oo.name === o && this.ValidateUnknownProps(obj[o], props.find(oo => oo.name === o)!.props)) || (typeof obj[o] !== "object")))
-  }
-
-  ValidateSequence(sequence: number[]) {
+  private ValidateSequence(sequence: number[]) {
     return sequence.sort().toString() === Array.from({ length: Math.max(...sequence) }, (x, i) => i + 1).toString()
   }
 }

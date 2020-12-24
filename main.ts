@@ -1,39 +1,33 @@
 import { Transaction } from "./transaction";
-import { Validator } from "./validator";
+import { ScenariosValidator, ScenarioValidator, Validator } from "./validator";
 import { Scenario } from "./scenario";
 
 const scenarios: Scenario[] = [
-  {
-    index: 1,
-    meta: {
-      title: 'Read popular customers',
-      description: 'This action is responsible for reading the most popular customers'
-    },
-    call: async (store) => { store.n = 1; },
-    restore: async (store) => { delete store.n; }
-  },
-  {
-    index: 3,
-    meta: {
-      title: 'Do something with popular customers',
-      description: 'Bla bla bla bla'
-    },
-    isCritical: false,
-    call: async (store) => { throw new Error(":D:D:D:D:D:D") },
-  },
-  {
-    index: 2,
-    meta: {
-      title: "Sort popular customers",
-      description: 'Sorting using quicksort',
-    },
-    call: async (store) => { store.n *= 10; },
-    restore: async (store) => { store.n /= 10; }
-  }
-];
+  new Scenario(
+    1,
+    "Read popular customers",
+    "This action is responsible for reading the most popular customers",
+    async (store) => { store.n = 1; },
+    async (store) => { delete store.n; }),
+  new Scenario(
+    3,
+    "Do something with popular customers",
+    "Bla bla bla bla",
+    async (store) => { throw new Error(":D:D:D:D:D:D") },
+    undefined,
+    false
+  ),
+  new Scenario(
+    2,
+    "Sort popular customers",
+    "Sorting using quicksort",
+    async (store) => { store.n *= 10; },
+    async (store) => { store.n /= 10; }
+  )
+]
 
-let validator = new Validator();
-validator.ValidateScenarios(scenarios);
+let scenariosValidator: Validator<Scenario[]> = new ScenariosValidator(new ScenarioValidator());
+scenariosValidator.Validate(scenarios);
 
 let transaction = new Transaction({});
 (async () => {
