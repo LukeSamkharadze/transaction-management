@@ -35,7 +35,7 @@ const scenarios: Scenario[] = [
 let validator = new Validator();
 validator.ValidateScenarios(scenarios);
 
-let transaction = new Transaction();
+let transaction = new Transaction({});
 (async () => {
   try {
     await transaction.DispatchScenarios(scenarios);
