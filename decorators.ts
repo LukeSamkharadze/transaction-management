@@ -1,3 +1,6 @@
+import { Validator } from "./validator"
+import Validator_ = Validator.Validator;
+
 export namespace Decorators {
   export function Secured(writable: boolean, configurable: boolean, enumerable: boolean) {
     return function (target: any, propertyKey: string): any {
@@ -9,9 +12,20 @@ export namespace Decorators {
     }
   }
 
+  export function ValidateConstructor(validator: Validator_<any>) {
+    return function <T extends { new(...args: any[]): {} }>(constructor: T) {
+      return class extends constructor {
+        constructor(...args: any[]) {
+          super(...args);
+          validator.Validate(this);
+        }
+      }
+    }
+  }
+
   export let counter: Map<string, number> = new Map<any, number>();
   export function ConstructorCounter(key: string) {
-    return function classDecorator<T extends { new(...args: any[]): {} }>(constructor: T) {
+    return function <T extends { new(...args: any[]): {} }>(constructor: T) {
       return class extends constructor {
         constructor(...args: any[]) {
           super(...args);

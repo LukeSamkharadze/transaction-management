@@ -1,6 +1,10 @@
 import { Decorators } from "./decorators"
+import ValidateConstructor = Decorators.ValidateConstructor;
 import ConstructorCounter = Decorators.ConstructorCounter;
 import Secured = Decorators.Secured;
+
+import { Validator } from "./validator"
+import ScenarioValidator = Validator.ScenarioValidator;
 
 export namespace Scenario {
   export type CallFn = (store: any) => Promise<any>;
@@ -11,6 +15,7 @@ export namespace Scenario {
   }
 
   @ConstructorCounter("scenarioConstructor")
+  @ValidateConstructor(new ScenarioValidator())
   export class Scenario {
     @Secured(true, false, false) index: number;
     @Secured(true, false, false) meta: Meta;
@@ -18,9 +23,9 @@ export namespace Scenario {
     @Secured(true, false, false) restore?: RestoreFn;
     @Secured(true, false, false) isCritical?: boolean;
 
-    constructor(index: number, title: string, description: string, call: CallFn, restore?: RestoreFn, isCritical: boolean = true) {
+    constructor(index: number, meta: Meta, call: CallFn, restore?: RestoreFn, isCritical: boolean = true) {
       this.index = index;
-      this.meta = new Meta(title, description);
+      this.meta = meta;
       this.call = call;
       this.restore = restore;
       this.isCritical = isCritical;

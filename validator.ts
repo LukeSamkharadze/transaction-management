@@ -43,9 +43,9 @@ export namespace Validator {
     private ValidateProperty(prop: Property, obj: Scen): boolean {
 
       if (this.IsValidPropertyName(prop.name, obj))
-        if (obj[prop.name] !== undefined || prop.isRequired)
+        if (obj[prop.name] !== undefined)
           return prop.validatorFn(obj[prop.name]);
-        else if (obj[prop.name] === undefined || prop.isRequired === false)
+        else if (obj[prop.name] === undefined && !prop.isRequired)
           return true;
       throw new Error(`Scenario with ID: ${obj.index} on ${prop.name} is not valid`);
     }
