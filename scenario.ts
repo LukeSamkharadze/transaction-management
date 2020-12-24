@@ -10,7 +10,8 @@ export class Scenario {
     title: string,
     description: string,
     public call: (store: any) => void,
-    public restore: (store: any) => void) {
+    public restore: (store: any) => void,
+    public isCritical: boolean = true) {
     this.meta = new Meta(title, description);
   }
 }
