@@ -1,6 +1,5 @@
 import { Scenario } from "./scenario"
-
-type Scen = Scenario.Scenario;
+import Scen = Scenario.Scenario;
 
 export namespace Validator {
   type ValidatorFn = (o: any) => boolean;

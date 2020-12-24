@@ -1,7 +1,6 @@
 import { Scenario } from "./scenario"
 
-export namespace Log {
-
+export namespace Logs {
   export interface Log {
     index: number;
     meta: Scenario.Meta;
@@ -38,5 +37,4 @@ export namespace Log {
       super(error);
     }
   }
-
 }

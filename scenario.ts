@@ -1,5 +1,4 @@
 export namespace Scenario {
-
   export type CallFn = (store: any) => Promise<any>;
   export type RestoreFn = (store: any) => Promise<any>;
 
