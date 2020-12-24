@@ -1,15 +1,22 @@
+import { Validator } from "./validator";
 import { Transaction } from "./transaction";
-import { ScenariosValidator, ScenarioValidator, Validator } from "./validator";
 import { Scenario } from "./scenario";
 
-const scenarios: Scenario[] = [
-  new Scenario(
+type ScenType = Scenario.Scenario;
+let Scen = Scenario.Scenario;
+let ScenValidator = Validator.ScenarioValidator;
+let ScensValidator = Validator.ScenariosValidator;
+
+let trans = Transaction.Transaction;
+
+const scenarios: ScenType[] = [
+  new Scen(
     1,
     "Read popular customers",
     "This action is responsible for reading the most popular customers",
     async (store) => { store.n = 1; },
     async (store) => { delete store.n; }),
-  new Scenario(
+  new Scen(
     3,
     "Do something with popular customers",
     "Bla bla bla bla",
@@ -17,7 +24,7 @@ const scenarios: Scenario[] = [
     undefined,
     false
   ),
-  new Scenario(
+  new Scen(
     2,
     "Sort popular customers",
     "Sorting using quicksort",
@@ -25,11 +32,11 @@ const scenarios: Scenario[] = [
     async (store) => { store.n /= 10; }
   )
 ]
-
-let scenariosValidator: Validator<Scenario[]> = new ScenariosValidator(new ScenarioValidator());
+console.log(scenarios.map(o => o.index));
+let scenariosValidator = new ScensValidator(new ScenValidator());
 scenariosValidator.Validate(scenarios);
 
-let transaction = new Transaction({});
+let transaction = new trans({});
 (async () => {
   try {
     await transaction.DispatchScenarios(scenarios);
