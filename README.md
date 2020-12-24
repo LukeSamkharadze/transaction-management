@@ -1,3 +1,3 @@
 # personal-project-javascript
 
-**tsc && build/main.js**
+**tsc && node build/main.js**
